@@ -1,11 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Header from './Header';
 import RecipeControl from './RecipeControl';
 
 function App() {
   return (
     <React.Fragment>
+      <Header />
       <RecipeControl />
     </React.Fragment>
   );
