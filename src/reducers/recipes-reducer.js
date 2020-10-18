@@ -3,7 +3,8 @@ import * as c from './../actions/ActionTypes';
 let initialState = {
   isLoading: false,
   recipes: [],
-  error: null
+  error: null,
+  filterText: ''
 }
 
 export default (state = initialState, action) => {

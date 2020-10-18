@@ -1,6 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { makeApiCall } from './../actions/index';
+import React from "react";
+import { connect } from "react-redux";
+import { makeApiCall } from "./../actions/index";
+import SearchBar from "./SearchBar";
+import { withFirestore, isLoaded } from "react-redux-firebase";
+// import firebase from "firebase/app";
 
 export class RecipeControl extends React.Component {
   constructor(props) {
@@ -14,21 +17,43 @@ export class RecipeControl extends React.Component {
 
   render() {
     const { error, isLoading, recipes } = this.props;
-    if (error) {
-      return <React.Fragment>Error: {error.message}</React.Fragment>;
-    } else if (isLoading) {
-      return <React.Fragment>Loading...</React.Fragment>;
-    } else {
+    const auth = this.props.firebase.auth;
+    console.log(auth);
+    if (!isLoaded(auth)) {
       return (
         <React.Fragment>
-          <h1>recipes</h1>
+          <h1>Loading...</h1>
+        </React.Fragment>
+      );
+    }
+    if (isLoaded(auth) && auth.isEmpty == true) {
+      return (
+        <React.Fragment>
+          <SearchBar />
+          <h1>Top Recipes</h1>
           <ul>
-            {recipes.map((recipe) =>
+            {recipes.map((recipe) => (
               <li key={recipe.id} id={recipe.id}>
                 <h3>{recipe.title}</h3>
                 <p>Ready in {recipe.readyInMinutes} minutes</p>
               </li>
-            )}
+            ))}
+          </ul>
+        </React.Fragment>
+      );
+    }
+    if (isLoaded(auth) && auth.isEmpty != true) {
+      return (
+        <React.Fragment>
+          <SearchBar />
+          <h1>Top 10 Recipes for you, pardner</h1>
+          <ul>
+            {recipes.map((recipe) => (
+              <li key={recipe.id} id={recipe.id}>
+                <h3>{recipe.title}</h3>
+                <p>Ready in {recipe.readyInMinutes} minutes</p>
+              </li>
+            ))}
           </ul>
         </React.Fragment>
       );
@@ -36,12 +61,13 @@ export class RecipeControl extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
-    recipes: state.recipes,
+    firebase: state.firebase,
+    recipes: state.recipesList.recipes,
     isLoading: state.isLoading,
-    error: state.error
-  }
-}
+    error: state.error,
+  };
+};
 
 export default connect(mapStateToProps)(RecipeControl);
